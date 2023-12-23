@@ -9,7 +9,7 @@ async function createUser(data) {
     const user = await userRepository.create(data);
     return user;
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     if (
       error.name == "SequelizeValidationError" ||
       error.name == "SequelizeUniqueConstraintError"
