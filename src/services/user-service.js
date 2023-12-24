@@ -3,6 +3,7 @@ const { UserRepository } = require("../repositories");
 const AppError = require("../utils/errors/app-error");
 const { Auth } = require("../utils/common");
 const { checkPassword } = require("../utils/common/auth");
+const { application } = require("express");
 
 const userRepository = new UserRepository();
 
@@ -55,7 +56,31 @@ async function signin(data) {
   }
 }
 
+async function isAuthenticated(token) {
+  try {
+    if (!token) {
+      throw new AppError("Missing jwt token", StatusCodes.BAD_REQUEST);
+    }
+    const response = Auth.verifyToken(token);
+    const user = await userRepository.get(response.id);
+    if (!user) {
+      throw new AppError("No user found", StatusCodes.BAD_REQUEST);
+    }
+    return user.id;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    if (error.name == "JsonWebTokenError") {
+      throw new AppError("invalid JWT token", StatusCodes.BAD_REQUEST);
+    }
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createUser,
   signin,
+  isAuthenticated,
 };
