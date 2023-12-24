@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   User.beforeCreate(function encrypt(user) {
+    //console.log(user)
     const encryptedPassword = bcrypt.hashSync(
       user.password,
       +ServerConfig.SALT_ROUNDS
@@ -44,3 +45,7 @@ module.exports = (sequelize, DataTypes) => {
 
   return User;
 };
+
+/**The user parameter is an instance of the User model. 
+ * It represents the user data that is about to be inserted into the database.
+ * seqelize provide user with hook */
