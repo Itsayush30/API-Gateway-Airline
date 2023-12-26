@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsToMany(models.Role, { through: "User_Roles", as: "role" });
     }
   }
   User.init(
@@ -46,6 +47,6 @@ module.exports = (sequelize, DataTypes) => {
   return User;
 };
 
-/**The user parameter is an instance of the User model. 
+/**The user parameter is an instance of the User model.
  * It represents the user data that is about to be inserted into the database.
  * seqelize provide user with hook */
