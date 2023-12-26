@@ -14,5 +14,6 @@ router.post(
   AuthRequestMiddlewares.validateAuthRequest,
   UserController.signin
 );
+router.post("/role", UserController.addRoleToUser);
 
 module.exports = router;

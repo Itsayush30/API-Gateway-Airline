@@ -87,8 +87,36 @@ async function isAuthenticated(token) {
   }
 }
 
+async function addRoletoUser(data) {
+  try {
+    const user = await userRepository.get(data.userId);
+    if (!user) {
+      throw new AppError(
+        "No user found for the given id",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    const role = await roleRepository.getRoleByName(data.role);
+    if (!role) {
+      throw new AppError(
+        "given role is invalid",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    user.addRole(role);
+    return user;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    console.log(error);
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
 module.exports = {
   createUser,
   signin,
   isAuthenticated,
+  addRoletoUser,
 };
