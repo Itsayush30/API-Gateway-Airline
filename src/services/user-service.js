@@ -1,15 +1,20 @@
 const { StatusCodes } = require("http-status-codes");
-const { UserRepository } = require("../repositories");
+const { UserRepository, RoleRepository } = require("../repositories");
 const AppError = require("../utils/errors/app-error");
-const { Auth } = require("../utils/common");
+const { Auth, Enums } = require("../utils/common");
 const { checkPassword } = require("../utils/common/auth");
 const { application } = require("express");
 
 const userRepository = new UserRepository();
+const roleRepository = new RoleRepository();
 
 async function createUser(data) {
   try {
     const user = await userRepository.create(data);
+    const role = await roleRepository.getRoleByName(
+      Enums.USER_ROLES_ENUMS.CUSTOMER
+    );
+    user.addRole(role);
     return user;
   } catch (error) {
     //console.log(error);
@@ -72,8 +77,8 @@ async function isAuthenticated(token) {
     if (error.name == "JsonWebTokenError") {
       throw new AppError("invalid JWT token", StatusCodes.BAD_REQUEST);
     }
-    if(error.name == 'TokenExpiredError') {
-        throw new AppError('JWT token expired', StatusCodes.BAD_REQUEST);
+    if (error.name == "TokenExpiredError") {
+      throw new AppError("JWT token expired", StatusCodes.BAD_REQUEST);
     }
     throw new AppError(
       "Something went wrong",
